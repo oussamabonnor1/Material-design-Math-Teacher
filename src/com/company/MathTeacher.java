@@ -1,3 +1,4 @@
+
 package com.company;
 
 import javafx.application.Application;
@@ -49,7 +50,8 @@ public class MathTeacher extends Application implements EventHandler {
         Title.setUnderline(true);
 
 
-        submit = new Button("Submit");
+        submit = new Button();
+        submit.setText("Submit");
         submit.setOnAction(this);
 
         answer = new TextField();
@@ -89,6 +91,7 @@ public class MathTeacher extends Application implements EventHandler {
                 generated = generate();
                 next = false;
                 submit.setText("Submit");
+                correction.setText("");
             }
         }
     }
