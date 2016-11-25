@@ -76,10 +76,9 @@ public class MathTeacher extends Application implements EventHandler {
         teacher.show();
         generated = generate();
     }
-
+    //test
     @Override
     public void handle(Event event) {
-
 
         if (event.getSource() == submit) {
             if (!next) {
