@@ -13,6 +13,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import sun.misc.Launcher;
+import sun.audio.*;
+
+import java.io.*;
 
 import java.util.Random;
 
@@ -34,7 +37,8 @@ public class MathTeacher extends Application implements EventHandler {
 
     String generated;
 
-    boolean next= false;
+    boolean next = false;
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -81,11 +85,15 @@ public class MathTeacher extends Application implements EventHandler {
             if (!next) {
                 if (answer.getText().equals(generated)) {
                     correction.setText("Correct !");
-                } else correction.setText("Wrong, Correct answer is: " + generated);
+                    Music(true);
+                } else {
+                    correction.setText("Wrong, Correct answer is: " + generated);
+                    Music(false);
+                }
                 submit.setText("Next");
-                next= true;
+                next = true;
 
-            }else{
+            } else {
                 answer.setText("");
                 generated = generate();
                 next = false;
@@ -118,7 +126,36 @@ public class MathTeacher extends Application implements EventHandler {
 
         System.out.println(generated);
         return generated;
+    }
 
+    public static void Music(boolean t) {
+        AudioPlayer joueur = AudioPlayer.player;
+
+        AudioStream background;
+        AudioStream stream;
+
+        AudioData data = null;
+
+        AudioDataStream test = null;
+
+        try {
+
+            if (t) {
+                background = new AudioStream(new FileInputStream("C:\\Users\\Oussama\\IdeaProjects\\Tutoriel\\Correct-answer.wav"));
+                data = background.getData();
+            }
+
+            if (!t) {
+                stream = new AudioStream(new FileInputStream("C:\\Users\\Oussama\\IdeaProjects\\Tutoriel\\Wrong-answer-sound-effect.wav"));
+                data = stream.getData();
+            }
+            test = new AudioDataStream(data);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        joueur.start(test);
 
     }
 }
