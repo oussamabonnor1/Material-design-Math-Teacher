@@ -25,14 +25,25 @@ import java.util.Random;
  */
 public class MathTeacher extends Application implements EventHandler {
     Stage teacher;
+
+    //first stage stuff
     Scene scene;
     VBox layout;
 
+    //Moving stage stuff
+    Scene scene2;
+    VBox layout2;
+
+    //stage stuff
     Label question;
     Label Title;
     TextField answer;
     Label correction;
     Button submit;
+    Label currentScore;
+
+    int score = 20;
+    int stage = 1;
 
     Random r = new Random();
 
@@ -53,6 +64,8 @@ public class MathTeacher extends Application implements EventHandler {
         Title.setTranslateY(-50);
         Title.setUnderline(true);
 
+        currentScore = new Label("Stage: " + stage + " / Score: " + score);
+        currentScore.setFont(Font.font("Arial", 20));
 
         submit = new Button();
         submit.setText("Submit");
@@ -70,14 +83,21 @@ public class MathTeacher extends Application implements EventHandler {
 
         layout = new VBox(50);
         layout.setAlignment(Pos.CENTER);
-        layout.getChildren().addAll(Title, question, answer, submit, correction);
+        layout.getChildren().addAll(Title, question, answer, submit, correction, currentScore);
+
+        layout2 = new VBox(50);
+        layout2.setAlignment(Pos.CENTER);
+
+
+        scene2 = new Scene(layout2, 600, 600);
 
         scene = new Scene(layout, 600, 600);
         teacher.setScene(scene);
+        teacher.setResizable(false);
         teacher.show();
         generated = generate();
     }
-    //test
+
     @Override
     public void handle(Event event) {
 
@@ -85,10 +105,12 @@ public class MathTeacher extends Application implements EventHandler {
             if (!next) {
                 if (answer.getText().equals(generated)) {
                     correction.setText("Correct !");
-                    Music(true);
+                    Music(0);
+                    score += 5;
+                    currentScore.setText("Stage: " + stage + " / Score: " + score);
                 } else {
                     correction.setText("Wrong, Correct answer is: " + generated);
-                    Music(false);
+                    Music(1);
                 }
                 submit.setText("Next");
                 next = true;
@@ -99,63 +121,92 @@ public class MathTeacher extends Application implements EventHandler {
                 next = false;
                 submit.setText("Submit");
                 correction.setText("");
+
+                if (score >= stage * 25) {
+                    stage += 1;
+                    question.setText("Congratulations, Level up !");
+                    question.setAlignment(Pos.CENTER);
+                    submit.setText("Continue...");
+                    currentScore.setText("Stage: " + stage + " / Score: " + score);
+                    layout2.getChildren().addAll(Title, question, submit, correction, currentScore);
+                    teacher.setScene(scene2);
+                    teacher.show();
+                    Music(2);
+
+                    submit.setOnAction(event1 -> {
+                        generated = generate();
+                        layout.getChildren().removeAll(Title, question, answer, submit, correction, currentScore);
+                        layout.getChildren().addAll(Title, question, answer, submit, correction, currentScore);
+                        teacher.setScene(scene);
+                        teacher.show();
+                        submit.setOnAction(this);
+                        submit.setText("Submit");
+                    });
+                }
             }
         }
     }
 
     public String generate() {
-
-        int first = r.nextInt(100);
-        int second = r.nextInt(100);
-        int op = r.nextInt(3);
+        int first, second, op, result = 0;
         String generated = "";
         char operation = ' ';
-        if (op == 0) {
-            generated = String.valueOf(first + second);
-            operation = '+';
-        }
-        if (op == 1) {
-            generated = String.valueOf(first - second);
-            operation = '-';
-        }
-        if (op == 2) {
-            generated = String.valueOf(first * second);
-            operation = 'x';
-        }
+
+        do {
+            first = r.nextInt(10 * stage);
+            second = r.nextInt(10 * stage);
+            op = r.nextInt(3);
+
+            if (op == 0) {
+                result = first + second;
+                operation = '+';
+            }
+            if (op == 1) {
+                result = first - second;
+                operation = '-';
+            }
+            if (op == 2) {
+                result = first * second;
+                operation = 'x';
+            }
+        } while (result < 0 || result > (100 * stage));
+
+        generated = String.valueOf(result);
         question.setText(first + " " + operation + " " + second + " = ?");
 
         System.out.println(generated);
         return generated;
     }
 
-    public static void Music(boolean t) {
+    public static void Music(int t) {
         AudioPlayer joueur = AudioPlayer.player;
 
-        AudioStream background;
-        AudioStream stream;
+        AudioStream background = null;
 
-        AudioData data = null;
+        AudioData data;
 
-        AudioDataStream test = null;
+        AudioDataStream output = null;
 
         try {
 
-            if (t) {
+            if (t == 0) {
                 background = new AudioStream(new FileInputStream("C:\\Users\\Oussama\\IdeaProjects\\Tutoriel\\Correct-answer.wav"));
-                data = background.getData();
             }
 
-            if (!t) {
-                stream = new AudioStream(new FileInputStream("C:\\Users\\Oussama\\IdeaProjects\\Tutoriel\\Wrong-answer-sound-effect.wav"));
-                data = stream.getData();
+            if (t == 1) {
+                background = new AudioStream(new FileInputStream("C:\\Users\\Oussama\\IdeaProjects\\Tutoriel\\Wrong-answer-sound-effect.wav"));
             }
-            test = new AudioDataStream(data);
+            if (t == 2) {
+                background = new AudioStream(new FileInputStream("C:\\Users\\Oussama\\IdeaProjects\\Tutoriel\\Next-Level-Sound.wav"));
+            }
+            data = background.getData();
+            output = new AudioDataStream(data);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        joueur.start(test);
+        joueur.start(output);
 
     }
 }
