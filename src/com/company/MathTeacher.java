@@ -42,7 +42,7 @@ public class MathTeacher extends Application implements EventHandler {
     Button submit;
     Label currentScore;
 
-    int score = 20;
+    int score = 0;
     int stage = 1;
 
     Random r = new Random();
