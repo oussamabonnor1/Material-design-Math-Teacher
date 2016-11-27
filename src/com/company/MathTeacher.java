@@ -4,18 +4,22 @@ package com.company;
 import javafx.application.Application;
 import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.geometry.Pos;
+import javafx.geometry.*;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.*;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import sun.misc.Launcher;
 import sun.audio.*;
 
+import java.awt.*;
+import java.awt.Color;
 import java.io.*;
 
 import java.util.Random;
@@ -63,6 +67,7 @@ public class MathTeacher extends Application implements EventHandler {
         Title.setFont(Font.font("Arial", 40));
         Title.setTranslateY(-50);
         Title.setUnderline(true);
+        Title.setTextFill(javafx.scene.paint.Paint.valueOf("Blue"));
 
         currentScore = new Label("Stage: " + stage + " / Score: " + score);
         currentScore.setFont(Font.font("Arial", 20));
@@ -77,6 +82,7 @@ public class MathTeacher extends Application implements EventHandler {
 
         question = new Label("Questions...");
         question.setFont(Font.font(30));
+        question.setTextFill(javafx.scene.paint.Paint.valueOf("BLUEVIOLET"));
 
         correction = new Label();
         correction.setFont(Font.font(30));
@@ -84,6 +90,7 @@ public class MathTeacher extends Application implements EventHandler {
         layout = new VBox(50);
         layout.setAlignment(Pos.CENTER);
         layout.getChildren().addAll(Title, question, answer, submit, correction, currentScore);
+        //layout.setBackground(new Background(new BackgroundFill(Paint.valueOf("Black"), CornerRadii.EMPTY, Insets.EMPTY)));
 
         layout2 = new VBox(50);
         layout2.setAlignment(Pos.CENTER);
@@ -92,6 +99,7 @@ public class MathTeacher extends Application implements EventHandler {
         scene2 = new Scene(layout2, 600, 600);
 
         scene = new Scene(layout, 600, 600);
+
         teacher.setScene(scene);
         teacher.setResizable(false);
         teacher.show();
@@ -105,11 +113,13 @@ public class MathTeacher extends Application implements EventHandler {
             if (!next) {
                 if (answer.getText().equals(generated)) {
                     correction.setText("Correct !");
+                    correction.setTextFill(javafx.scene.paint.Paint.valueOf("Green"));
                     Music(0);
                     score += 5;
                     currentScore.setText("Stage: " + stage + " / Score: " + score);
                 } else {
                     correction.setText("Wrong, Correct answer is: " + generated);
+                    correction.setTextFill(javafx.scene.paint.Paint.valueOf("Red"));
                     Music(1);
                 }
                 submit.setText("Next");
@@ -124,7 +134,10 @@ public class MathTeacher extends Application implements EventHandler {
 
                 if (score >= stage * 25) {
                     stage += 1;
-                    question.setText("Congratulations, Level up !");
+                    if (stage == 5)question.setText("Congratulations, Level up !\n YOU UNLOCKED: DIVISION");
+                    else question.setText("Congratulations, Level up !");
+
+                    question.setTextFill(javafx.scene.paint.Paint.valueOf("GREEN"));
                     question.setAlignment(Pos.CENTER);
                     submit.setText("Continue...");
                     currentScore.setText("Stage: " + stage + " / Score: " + score);
@@ -141,6 +154,7 @@ public class MathTeacher extends Application implements EventHandler {
                         teacher.show();
                         submit.setOnAction(this);
                         submit.setText("Submit");
+                        question.setTextFill(javafx.scene.paint.Paint.valueOf("black"));
                     });
                 }
             }
@@ -155,7 +169,8 @@ public class MathTeacher extends Application implements EventHandler {
         do {
             first = r.nextInt(10 * stage);
             second = r.nextInt(10 * stage);
-            op = r.nextInt(3);
+            if(stage<5 ) op = r.nextInt(3);
+            else op = r.nextInt(4);
 
             if (op == 0) {
                 result = first + second;
@@ -168,6 +183,10 @@ public class MathTeacher extends Application implements EventHandler {
             if (op == 2) {
                 result = first * second;
                 operation = 'x';
+            }
+            if (op == 3) {
+                result = first / second;
+                operation = '/';
             }
         } while (result < 0 || result > (100 * stage));
 
