@@ -25,7 +25,10 @@ import java.awt.Color;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import sun.security.util.ManifestEntryVerifier;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.*;
 
 import java.util.Random;
@@ -33,7 +36,7 @@ import java.util.Random;
 /**
  * Created by Oussama on 24/11/2016.
  */
-public class MathTeacher extends Application implements EventHandler {
+public class MathTeacher extends Application implements EventHandler{
     Stage teacher;
 
     //first stage stuff
@@ -73,23 +76,9 @@ public class MathTeacher extends Application implements EventHandler {
     public void start(Stage primaryStage) throws Exception {
         teacher = primaryStage;
 
-      /*  Image image = null;
-        try {
-            image = new Image("C:\\Users\\Oussama\\IdeaProjects\\Tutoriel\\Test.png");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        ImageView  v = new ImageView();
-        v.setImage(image);
-        v.setTranslateX(200);
-        v.setTranslateY(200);
-        //v.setFitWidth(600);
-        */
-
         Title = new Label("MATH TEACHER");
         Title.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 40));
         Title.setTranslateY(-30);
-        //Title.setUnderline(true);
         Title.setTextFill(Paint.valueOf("#FFFFFF"));
 
         currentScore = new Label("Stage: " + stage + " / Score: " + score);
@@ -129,7 +118,7 @@ public class MathTeacher extends Application implements EventHandler {
 
         openingLayout = new VBox(50);
         openingLayout.setAlignment(Pos.CENTER);
-        openingLayout.getChildren().addAll(Title, question,answer ,submit);
+        openingLayout.getChildren().addAll(Title, question, answer, submit);
         openingLayout.setBackground(new Background(new BackgroundFill(Paint.valueOf("#009866FF"), CornerRadii.EMPTY, Insets.EMPTY)));
 
         openingScene = new Scene(openingLayout, 600, 600);
@@ -142,86 +131,12 @@ public class MathTeacher extends Application implements EventHandler {
         teacher.setScene(openingScene);
         teacher.setResizable(false);
         teacher.show();
-        //generated = generate();
     }
 
     @Override
     public void handle(Event event) {
-
-
         if (event.getSource() == submit) {
-            if (submit.getText() == "Start") {
-                layout.getChildren().removeAll(Title, question, answer, submit, correction, currentScore);
-                layout.getChildren().addAll(Title, question, answer, submit, correction, currentScore);
-                teacher.setScene(scene);
-                generated = generate();
-                submit.setText("Submit");
-                name = answer.getText();
-                answer.setText("");
-                currentScore.setText(name+ ": Stage: " + stage + " / Score: " + score);
-
-            } else {
-                if (!next) {
-                    if (answer.getText().equals(generated)) {
-                        correction.setText("Great answer, "+name+ " !");
-                        correction.setTextFill(Paint.valueOf("#ffffff"));
-                        Music(0);
-                        score += 5;
-                        currentScore.setText(name+ ": Stage: " + stage + " / Score: " + score);
-                    } else {
-                        correction.setText("Wrong, Correct answer is: " + generated);
-                        correction.setTextFill(Paint.valueOf("#EE1515FF"));
-                        Music(1);
-                    }
-                    submit.setText("Next");
-                    next = true;
-
-                } else {
-                    answer.setText("");
-                    generated = generate();
-                    next = false;
-                    submit.setText("Submit");
-                    correction.setText("");
-
-                    if (score >= stage * 25) {
-                        stage += 1;
-                        if (stage == 5) question.setText("Congratulations, Level up !\n YOU UNLOCKED: DIVISION");
-                        else question.setText("Congratulations, Level up !");
-
-                        question.setTextFill(Paint.valueOf("#ffffff"));
-                        question.setAlignment(Pos.CENTER);
-
-                        submit.setText("Continue...");
-                        submit.setTextFill(Paint.valueOf("ffffff"));
-                        submit.setFont(Font.font("", FontWeight.EXTRA_BOLD, 20));
-                        submit.setMaxSize(200, 100);
-
-                        currentScore.setText("Stage: " + stage + " / Score: " + score);
-
-                        levelUpLayout.getChildren().addAll(Title, question, submit, correction, currentScore);
-                        teacher.setScene(levelUpScene);
-                        teacher.show();
-                        Music(2);
-
-                        submit.setOnAction(event1 -> {
-                            generated = generate();
-                            submit.setOnAction(this);
-                            submit.setText("Submit");
-                            submit.setOnAction(this);
-                            submit.setTextFill(Paint.valueOf("#ffffff"));
-                            submit.setFont(Font.font("", FontWeight.EXTRA_BOLD, 15));
-                            submit.setBackground(new Background(new BackgroundFill(Paint.valueOf("0098ECFF"), null, null)));
-                            submit.setMaxSize(120, 5);
-
-                            layout.getChildren().removeAll(Title, question, answer, submit, correction, currentScore);
-                            layout.getChildren().addAll(Title, question, answer, submit, correction, currentScore);
-                            teacher.setScene(scene);
-                            teacher.show();
-
-                        });
-                    }
-                }
-            }
+            Manager();
         }
     }
 
@@ -289,4 +204,85 @@ public class MathTeacher extends Application implements EventHandler {
         joueur.start(output);
 
     }
+
+    public void Manager() {
+        if (submit.getText() == "Start") {
+            layout.getChildren().removeAll(Title, question, answer, submit, correction, currentScore);
+            layout.getChildren().addAll(Title, question, answer, submit, correction, currentScore);
+            teacher.setScene(scene);
+            generated = generate();
+            submit.setText("Submit");
+            name = answer.getText();
+            answer.setText("");
+            currentScore.setText(name + ": Stage: " + stage + " / Score: " + score);
+            Music(2);
+
+        } else {
+            if (!next) {
+                if (answer.getText().equals(generated)) {
+                    correction.setText("Great answer, " + name + " !");
+                    correction.setTextFill(Paint.valueOf("#ffffff"));
+                    Music(0);
+                    score += 5;
+                    currentScore.setText(name + ": Stage: " + stage + " / Score: " + score);
+                } else {
+                    correction.setText("Wrong, Correct answer is: " + generated);
+                    correction.setTextFill(Paint.valueOf("#EE1515FF"));
+                    Music(1);
+                }
+                submit.setText("Next");
+                next = true;
+
+            } else {
+                answer.setText("");
+                generated = generate();
+                next = false;
+                submit.setText("Submit");
+                correction.setText("");
+
+                if (score >= stage * 25) {
+                    stage += 1;
+                    if (stage == 5) question.setText("Congratulations, Level up !\n YOU UNLOCKED: DIVISION");
+                    else question.setText("Level up " + name + " !");
+
+                    question.setTextFill(Paint.valueOf("#ffffff"));
+                    question.setAlignment(Pos.CENTER);
+
+                    submit.setText("Continue...");
+                    submit.setTextFill(Paint.valueOf("ffffff"));
+                    submit.setFont(Font.font("", FontWeight.EXTRA_BOLD, 20));
+                    submit.setMaxSize(200, 100);
+
+                    currentScore.setText("Stage: " + stage + " / Score: " + score);
+
+                    levelUpLayout.getChildren().addAll(Title, question, submit, correction, currentScore);
+                    teacher.setScene(levelUpScene);
+                    teacher.show();
+                    Music(2);
+
+                    submit.setOnAction(event1 -> {
+                        generated = generate();
+
+                        submit.setOnAction(this);
+                        submit.setText("Submit");
+                        submit.setOnAction(this);
+                        submit.setTextFill(Paint.valueOf("#ffffff"));
+                        submit.setFont(Font.font("", FontWeight.EXTRA_BOLD, 15));
+                        submit.setBackground(new Background(new BackgroundFill(Paint.valueOf("0098ECFF"), null, null)));
+                        submit.setMaxSize(120, 5);
+
+                        layout.getChildren().removeAll(Title, question, answer, submit, correction, currentScore);
+                        layout.getChildren().addAll(Title, question, answer, submit, correction, currentScore);
+
+                        teacher.setScene(scene);
+                        teacher.show();
+
+                    });
+                }
+            }
+        }
+    }
+
 }
+
+
