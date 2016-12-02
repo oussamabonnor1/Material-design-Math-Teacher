@@ -1,6 +1,7 @@
 
 package com.company;
 
+import com.oracle.deploy.update.Updater;
 import javafx.application.Application;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -32,11 +33,13 @@ import java.awt.event.KeyListener;
 import java.io.*;
 
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by Oussama on 24/11/2016.
  */
-public class MathTeacher extends Application implements EventHandler{
+public class MathTeacher extends Application implements EventHandler {
     Stage teacher;
 
     //first stage stuff
@@ -65,7 +68,7 @@ public class MathTeacher extends Application implements EventHandler{
     Random r = new Random();
 
     String generated;
-    String name;
+    String name = "";
     boolean next = false;
 
     public static void main(String[] args) {
@@ -75,6 +78,7 @@ public class MathTeacher extends Application implements EventHandler{
     @Override
     public void start(Stage primaryStage) throws Exception {
         teacher = primaryStage;
+
 
         Title = new Label("MATH TEACHER");
         Title.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 40));
@@ -127,10 +131,10 @@ public class MathTeacher extends Application implements EventHandler{
 
         scene = new Scene(layout, 600, 600);
 
-
         teacher.setScene(openingScene);
         teacher.setResizable(false);
         teacher.show();
+
     }
 
     @Override
@@ -207,21 +211,27 @@ public class MathTeacher extends Application implements EventHandler{
 
     public void Manager() {
         if (submit.getText() == "Start") {
-            layout.getChildren().removeAll(Title, question, answer, submit, correction, currentScore);
-            layout.getChildren().addAll(Title, question, answer, submit, correction, currentScore);
-            teacher.setScene(scene);
-            generated = generate();
-            submit.setText("Submit");
-            name = answer.getText();
-            answer.setText("");
-            currentScore.setText(name + ": Stage: " + stage + " / Score: " + score);
-            Music(2);
-
+            if (answer.getText().equals(name)) {
+                    question.setText("YOU must fill in a name.");
+                    question.setTextFill(Paint.valueOf("EE1515FF"));
+            } else {
+                layout.getChildren().removeAll(Title, question, answer, submit, correction, currentScore);
+                layout.getChildren().addAll(Title, question, answer, submit, correction, currentScore);
+                teacher.setScene(scene);
+                generated = generate();
+                submit.setText("Submit");
+                name = answer.getText();
+                answer.setText("");
+                question.setTextFill(Paint.valueOf("ffffff"));
+                currentScore.setText(name + ": Stage: " + stage + " / Score: " + score);
+                Music(2);
+            }
         } else {
             if (!next) {
                 if (answer.getText().equals(generated)) {
                     correction.setText("Great answer, " + name + " !");
                     correction.setTextFill(Paint.valueOf("#ffffff"));
+                    correction.setFont(Font.font("", FontWeight.EXTRA_BOLD, 30));
                     Music(0);
                     score += 5;
                     currentScore.setText(name + ": Stage: " + stage + " / Score: " + score);
@@ -282,7 +292,6 @@ public class MathTeacher extends Application implements EventHandler{
             }
         }
     }
-
 }
 
 
