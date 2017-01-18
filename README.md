@@ -3,3 +3,4 @@ This is a simple software with a friendly UI to teach kids some basic mental cal
 +7 Ages appropriate, designed to suit better primary school kids.
 ![image](https://cloud.githubusercontent.com/assets/17766221/22082813/9da26318-ddc9-11e6-9a0b-16a21444fa64.png)
 
+![image](https://cloud.githubusercontent.com/assets/17766221/22082955/28fe08b8-ddca-11e6-8a58-c1ea505eb64a.png)
