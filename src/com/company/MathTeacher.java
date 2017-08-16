@@ -293,5 +293,3 @@ public class MathTeacher extends Application implements EventHandler {
         }
     }
 }
-
-
